@@ -7,9 +7,50 @@ import authOptions from '@/lib/auth-options'
 import { streamComplete } from '@chatbotkit/react/actions/complete'
 import { ChatBotKit } from '@chatbotkit/sdk'
 
+import crypto from 'node:crypto'
+
 const cbk = new ChatBotKit({
   secret: process.env.CHATBOTKIT_API_SECRET,
 })
+
+/**
+ * @note Namespace for generating deterministic UUID v5 fingerprints from user
+ * emails. This ensures the same email always produces the same fingerprint
+ * without leaking PII.
+ */
+const CONTACT_NAMESPACE = 'e676f123-b5eb-4c44-a80b-8aa0e723cfe6'
+
+/**
+ * Generates a deterministic UUID v5 from an email address and namespace.
+ *
+ * @param {string} email - The email to derive a fingerprint from
+ * @returns {string} A deterministic UUID v5 string
+ */
+function generateFingerprint(email) {
+  const namespaceBytes = Buffer.from(CONTACT_NAMESPACE.replace(/-/g, ''), 'hex')
+
+  const hash = crypto
+    .createHash('sha1')
+    .update(namespaceBytes)
+    .update(email.toLowerCase())
+    .digest()
+
+  // Set version to 5 (SHA-1 based)
+  hash[6] = (hash[6] & 0x0f) | 0x50
+
+  // Set variant to RFC 4122
+  hash[8] = (hash[8] & 0x3f) | 0x80
+
+  const hex = hash.toString('hex').slice(0, 32)
+
+  return [
+    hex.slice(0, 8),
+    hex.slice(8, 12),
+    hex.slice(12, 16),
+    hex.slice(16, 20),
+    hex.slice(20, 32),
+  ].join('-')
+}
 
 /**
  * Parses the CHATBOTKIT_BOT_IDS environment variable into an array of bot IDs.
@@ -45,7 +86,8 @@ async function requireSession() {
 /**
  * Ensures a ChatBotKit contact exists for the authenticated user.
  *
- * Uses the user's email as a stable identifier via `contact.ensure()`.
+ * Generates a deterministic UUID v5 fingerprint from the user's email so the
+ * fingerprint is stable and doesn't leak raw PII.
  *
  * @returns {Promise<string>} The contact ID
  */
@@ -53,6 +95,7 @@ export async function ensureContact() {
   const session = await requireSession()
 
   const { id } = await cbk.contact.ensure({
+    fingerprint: generateFingerprint(session.user.email),
     email: session.user.email,
     name: session.user.name || '',
   })
