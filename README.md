@@ -1,0 +1,1 @@
+# template-nextjs-chat-auth-js
