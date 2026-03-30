@@ -207,10 +207,10 @@ async function generateConversationLabel(messages) {
  * The flow is stateless on the wire (full message history sent each turn)
  * but conversations are persisted server-side:
  *
- * 1. `onStart` — creates or fetches the conversation, associating it with
+ * 1. `onStart` - creates or fetches the conversation, associating it with
  *    the contact. Returns a `conversation` event to the client with the ID.
  * 2. The completion streams normally.
- * 3. `onFinish` — saves the new messages (user input + bot response) to the
+ * 3. `onFinish` - saves the new messages (user input + bot response) to the
  *    conversation and updates its name/description label.
  *
  * @param {object} params
