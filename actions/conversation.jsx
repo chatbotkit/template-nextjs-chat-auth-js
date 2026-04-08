@@ -233,7 +233,7 @@ export async function complete({ botId, contactId, conversationId, messages }) {
       ? { botId }
       : {
           backstory: `You are a helpful AI assistant. You are friendly, concise, and knowledgeable. You help users with their questions and tasks. The current user is ${session.user.name || 'a user'}.`,
-          model: 'gpt-4o',
+          model: 'gpt-5.4-mini',
         }),
 
     // Associate the conversation with the contact for the stateless
