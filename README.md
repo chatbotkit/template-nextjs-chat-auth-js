@@ -2,6 +2,8 @@
 
 A production-ready chat application template with authentication, conversation persistence, and full ChatBotKit platform integration - built with Next.js, ChatBotKit SDK, next-auth, and shadcn/ui.
 
+<img width="50%" src="https://github.com/user-attachments/assets/d870e213-2f77-4ffd-ae61-c6368e100da1" />
+
 > **Note:** This template is deliberately bare-bones. It provides the minimal structure and wiring needed to get a working app, intentionally leaving styling, layout, and architectural choices open so you can build on top without fighting existing opinions.
 
 ## Why ChatBotKit?
